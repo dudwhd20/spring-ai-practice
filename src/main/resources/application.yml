@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  devtools:
+    add-properties: off
+  application:
+    name: triger-AI-agent
+  datasource:
+    url: jdbc:postgresql://localhost:5432/triger?schema=public
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  ai:
+    embedding:
+      transformer:
+        onnx:
+          # Use a relative path for easier portability and deployment
+          model-uri: file:./models/onnx-all-MiniLM-L6-v2/model.onnx
+          model-output-name: token_embeddings
+        tokenizer:
+          uri: file:./models/onnx-all-MiniLM-L6-v2/tokenizer.json
+#        cache:
+#          directory: file:./models/onnx-all-MiniLM-L6-v2
+#          enabled: true
+
+    vectorstore:
+      chroma:
+        collection-name: triger_collection
+        initialize-schema: true
+        client:
+          host: http://localhost
+          port: 8123
+        database-name: test_database
+        tenant-name: test_tenant
+      observations:
+        log-query-response: true
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: llama3.1
+      init:
+        pull-model-strategy: never
+        embedding:
+          include: false
+#      embedding:
+#        options:
+#          model: /Users/youngjongso/dev/triger-agent-demo/models/all-MiniLM-L6-v2
+logging:
+  level:
+    web: debug
+    ai: debug
+    com:
+      triger: debug
+
