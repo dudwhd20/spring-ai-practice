@@ -39,6 +39,7 @@ public class GlobalExceptionHandler {
     // ③ 기타 모든 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(Exception e) {
+        e.printStackTrace();
         return new ResponseEntity<>(new ApiResponse<>(false, null,e.getMessage(),500), HttpStatus.BAD_REQUEST);
     }
 

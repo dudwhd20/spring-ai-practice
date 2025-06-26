@@ -24,14 +24,13 @@ spring:
     embedding:
       transformer:
         onnx:
-          # Use a relative path for easier portability and deployment
-          model-uri: file:./models/onnx-all-MiniLM-L6-v2/model.onnx
+          model-uri: file:./models/onnx-e5-model2/model.onnx
           model-output-name: token_embeddings
         tokenizer:
-          uri: file:./models/onnx-all-MiniLM-L6-v2/tokenizer.json
-#        cache:
-#          directory: file:./models/onnx-all-MiniLM-L6-v2
-#          enabled: true
+          uri: file:./models/onnx-e5-model2/tokenizer.json
+        cache:
+          enabled: off
+
 
     vectorstore:
       chroma:
