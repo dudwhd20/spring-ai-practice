@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+/models/onnx-e5-model/
+/src/main/java/com/triger/trigeragentdemo/model.onnx_data
+/models/onnx-e5-model2/
+/chroma-compose/chroma_data/

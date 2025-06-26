@@ -14,9 +14,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Vector Store 중 Chroma DB 의 port 부분을 구현한 구현체
@@ -32,7 +30,7 @@ public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, Vec
 
     public ChromaVectorStoreAdapter(ChromaVectorStore vectorStore) {
         this.vectorStore = vectorStore;
-        this.textSplitter = new TokenTextSplitter(300, 200, 10, 10000, true);
+        this.textSplitter = new TokenTextSplitter(200, 100, 10, 10000, true);
     }
 
     /**
@@ -50,13 +48,16 @@ public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, Vec
 
         List<Document> chunks;
 
-        if (commend.content().length() < 20) {
-            chunks = List.of(new Document(commend.content()));
-        } else{
+//        if (commend.content().length() < 20) {
+//            log.debug("20자리 미만의 컨텐츠");
+//            chunks = List.of(new Document(commend.content()));
+//        } else{
+            log.debug("텍스트 스플리터 사용");
             chunks = textSplitter.split(new Document(commend.content()));
-        }
+            log.debug("chunks Size : {}" , chunks.size());
+//        }
 
-        vectorStore.add(chunks);
+        vectorStore.add(chunks.stream().map(e-> new Document("passage: " +  e.getText())).toList());
     }
 
     /**
@@ -69,8 +70,8 @@ public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, Vec
     @Override
     public List<String> query(String searchData, int topK) {
         List<Document> result = this.vectorStore.similaritySearch(SearchRequest.builder()
-                .query(searchData).topK(5)
-                .similarityThreshold(0.5)
+                .query(searchData).topK(topK)
+                .similarityThreshold(0.8)
                 .build());
 
         if (result != null && !result.isEmpty()) {
