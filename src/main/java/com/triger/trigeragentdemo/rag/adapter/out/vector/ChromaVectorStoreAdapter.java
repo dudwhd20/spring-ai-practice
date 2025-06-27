@@ -2,19 +2,26 @@ package com.triger.trigeragentdemo.rag.adapter.out.vector;
 
 import com.triger.trigeragentdemo.common.ErrorCode;
 import com.triger.trigeragentdemo.config.BusinessException;
+import com.triger.trigeragentdemo.rag.application.port.out.VectorStoreADDPDFDocumentPort;
 import com.triger.trigeragentdemo.rag.application.port.out.VectorStoreAddDocumentPort;
 import com.triger.trigeragentdemo.rag.application.port.out.VectorStoreQueryDocumentPort;
 import com.triger.trigeragentdemo.rag.application.port.out.vector.AddDocumentVectorStoreCommend;
+import com.triger.trigeragentdemo.rag.application.port.out.vector.AddPDFDocumentVectorStoreCommend;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chroma.vectorstore.ChromaVectorStore;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Vector Store 중 Chroma DB 의 port 부분을 구현한 구현체
@@ -23,7 +30,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, VectorStoreQueryDocumentPort {
+public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, VectorStoreQueryDocumentPort , VectorStoreADDPDFDocumentPort {
 
     private final VectorStore vectorStore;
     private final TextSplitter textSplitter;
@@ -80,5 +87,32 @@ public class ChromaVectorStoreAdapter implements VectorStoreAddDocumentPort, Vec
         }
 
         throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND, "검색 된 문서가 없습니다.");
+    }
+
+    @Override
+    public void ingest(AddPDFDocumentVectorStoreCommend commend) {
+
+        if(commend.file() == null || !commend.file().getName().toLowerCase().endsWith(".pdf")){
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "PDF 파일이 필요 합니다.");
+        }
+
+        var pdfDocs = readPdf(commend.file());
+//        var docMetaData = Map.of("fileName", commend.file().getName(),
+//                                                                                        "uploadTime", System.currentTimeMillis());
+        var chunks = textSplitter.split(pdfDocs);
+
+        vectorStore.add(chunks.stream().map(e-> new Document("passage: " +  e.getText())).toList());
+    }
+
+
+    /**
+     * PDF Reader
+     * @param file PDF 파일
+     * @return List<Document>
+     */
+    private List<Document> readPdf(File file){
+        Resource resource = new FileSystemResource(file);
+        TikaDocumentReader reader = new TikaDocumentReader(resource);
+        return reader.read();
     }
 }

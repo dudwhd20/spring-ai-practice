@@ -26,4 +26,9 @@ public class GeneratorAnswerWithContextService implements GeneratorAnswerWithCon
         return chatLLMPort.ragChat(content);
     }
 
+    @Override
+    public String toolChainWithLLM(String content) {
+        return chatLLMPort.ragWithToolChain(content);
+    }
+
 }

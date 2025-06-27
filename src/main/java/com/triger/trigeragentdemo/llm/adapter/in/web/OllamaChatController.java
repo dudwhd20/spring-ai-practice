@@ -32,13 +32,22 @@ public class OllamaChatController {
     }
 
     /**
-     * 기본 Chat Rag 제외
+     * 기본 Chat Rag
      * @param dto 유저 채팅
      * @return Ollama Response
      */
     @PostMapping("/rag")
     public ApiResponse<String> ragChatOllama(@RequestBody RequestChatLLM dto){
         return ApiResponse.ok(generatorAnswerWithContextUseCase.retrieveCheatWithLLm(dto.userQuestion()));
+    }
+    /**
+     * 기본 Chat Tool
+     * @param dto 유저 채팅
+     * @return Ollama Response
+     */
+    @PostMapping("/tool")
+    public ApiResponse<String> toolWithChatOllama(@RequestBody RequestChatLLM dto){
+        return ApiResponse.ok(generatorAnswerWithContextUseCase.toolChainWithLLM(dto.userQuestion()));
     }
 
 }

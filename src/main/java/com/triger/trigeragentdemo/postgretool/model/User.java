@@ -1,4 +1,4 @@
-package com.triger.trigeragentdemo.rag.domain.model;
+package com.triger.trigeragentdemo.postgretool.model;
 
 
 import jakarta.persistence.Entity;

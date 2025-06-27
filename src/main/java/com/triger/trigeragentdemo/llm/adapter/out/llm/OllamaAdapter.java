@@ -1,6 +1,7 @@
 package com.triger.trigeragentdemo.llm.adapter.out.llm;
 
 import com.triger.trigeragentdemo.llm.application.port.out.ChatLLMPort;
+import com.triger.trigeragentdemo.postgretool.application.service.LeaveRepositoryTool;
 import com.triger.trigeragentdemo.rag.application.port.in.QueryDocumentUseCase;
 import com.triger.trigeragentdemo.rag.application.port.out.vector.QueryDocumentVectorStoreCommend;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +26,16 @@ import java.util.stream.Collectors;
 @Component
 public class OllamaAdapter implements ChatLLMPort {
 
-    public OllamaAdapter(ChatClient.Builder chatClientBuilder, VectorStore vectorStore) {
-        this.chatClient = chatClientBuilder.build();
+    public OllamaAdapter(VectorStore vectorStore, ChatClient.Builder chatClient, LeaveRepositoryTool leaveRepositoryTool) {
         this.vectorStore = vectorStore;
+        this.chatClient = chatClient.build();
+        this.leaveRepositoryTool = leaveRepositoryTool;
     }
 
     private final VectorStore vectorStore;
     private final ChatClient chatClient;
+
+    private final LeaveRepositoryTool leaveRepositoryTool;
 
 
     @Override
@@ -84,6 +88,18 @@ public class OllamaAdapter implements ChatLLMPort {
 
     @Override
     public String ragWithToolChain(String userQuestion) {
-        return "";
+
+        var system = """
+                당신은 사내 지식 기반 AI입니다.
+                툴을 사용 했다고 상대방에게 알리지 마세요
+                """;
+
+
+        return chatClient.prompt()
+                .system(system)
+                .user(userQuestion)
+                .tools(leaveRepositoryTool)
+                .call()
+                .content();
     }
 }

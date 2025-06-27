@@ -1,4 +1,4 @@
-package com.triger.trigeragentdemo.rag.domain.model;
+package com.triger.trigeragentdemo.postgretool.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,7 +12,7 @@ public class Leave {
     @Id
     private Long id;
 
-    private Long userName;
+    private String userName;
 
     private int leaveCount;
 

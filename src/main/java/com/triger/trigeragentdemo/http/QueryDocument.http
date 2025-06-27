@@ -1,5 +1,5 @@
 < {%
-    let content = '휴가 신청 방법';
+    let content = '직무 이탈 금지';
     client.global.set("encodedContent", encodeURIComponent(content)) %}
 
 GET localhost:8080/api/v1/rag/query/{{encodedContent}}

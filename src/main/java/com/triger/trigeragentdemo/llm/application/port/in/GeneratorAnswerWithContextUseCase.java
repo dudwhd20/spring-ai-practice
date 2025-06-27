@@ -4,4 +4,6 @@ public interface GeneratorAnswerWithContextUseCase {
     String cheatWithLLM(String content);
 
     String retrieveCheatWithLLm(String content);
+
+    String toolChainWithLLM(String content);
 }

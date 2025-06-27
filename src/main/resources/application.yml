@@ -1,6 +1,7 @@
 server:
   port: 8080
 
+
 spring:
   devtools:
     add-properties: off
@@ -31,7 +32,6 @@ spring:
         cache:
           enabled: off
 
-
     vectorstore:
       chroma:
         collection-name: triger_collection
@@ -51,6 +51,18 @@ spring:
         pull-model-strategy: never
         embedding:
           include: false
+    chat:
+      client:
+        observations:
+          log-prompt: true
+      observations:
+        log-completion: true
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
 #      embedding:
 #        options:
 #          model: /Users/youngjongso/dev/triger-agent-demo/models/all-MiniLM-L6-v2
